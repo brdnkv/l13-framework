@@ -839,6 +839,35 @@ class DatabaseConnectionTest extends TestCase
         $this->assertFalse($connection->hasModifiedRecords());
     }
 
+    public function testUsesWriteConnectionWhenReadingDefaultsToFalse()
+    {
+        $connection = new MySqlConnection(new DatabaseConnectionTestMockPDO);
+
+        $this->assertFalse($connection->usesWriteConnectionWhenReading());
+    }
+
+    public function testUsesWriteConnectionWhenReadingReflectsTheCurrentPreference()
+    {
+        $connection = new MySqlConnection(new DatabaseConnectionTestMockPDO);
+
+        $connection->useWriteConnectionWhenReading();
+        $this->assertTrue($connection->usesWriteConnectionWhenReading());
+
+        $connection->useWriteConnectionWhenReading(false);
+        $this->assertFalse($connection->usesWriteConnectionWhenReading());
+    }
+
+    public function testUsingWritePdoTemporarilyEnablesWriteConnectionWhenReading()
+    {
+        $connection = new MySqlConnection(new DatabaseConnectionTestMockPDO);
+
+        $connection->usingWritePdo(function ($connection) {
+            $this->assertTrue($connection->usesWriteConnectionWhenReading());
+        });
+
+        $this->assertFalse($connection->usesWriteConnectionWhenReading());
+    }
+
     #[AllowMockObjectsWithoutExpectations]
     public function testSchemaBuilderCanBeCreated()
     {

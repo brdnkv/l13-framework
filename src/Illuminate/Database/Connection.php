@@ -1359,6 +1359,18 @@ class Connection implements ConnectionInterface
     }
 
     /**
+     * Determine if the connection has been instructed to use the write PDO connection for reads.
+     *
+     * This does not account for open transactions or sticky connections.
+     *
+     * @return bool
+     */
+    public function usesWriteConnectionWhenReading()
+    {
+        return $this->readOnWriteConnection;
+    }
+
+    /**
      * Execute the given callback using the write PDO connection for reads.
      *
      * @template TReturn
